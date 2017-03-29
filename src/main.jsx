@@ -96,7 +96,11 @@ const AppState = new StateStore({
 
     filtersMap: Object.keys(workersData[0]).reduce((map, data) => {
 
-        map[data] = "";
+        if (data === "dateOfBirth") {
+            map[data] = new Date().toLocaleDateString();
+        } else {
+            map[data] = "";
+        }
 
         return map;
     }, {}),
@@ -109,7 +113,14 @@ const TableHeader = (props) => (
     <thead>
     <tr>
         {Object.keys(props.data.labels).map((label) => {
-            return <th key={label}>{props.data.labels[label]}</th>;
+            return <th key={label}>
+                {props.data.labels[label]}
+                {" "}
+                <span className="glyphicon glyphicon-triangle-bottom"
+                      onClick={(e) => props.onActivate(label, e)}></span>
+                {" "}
+                <span className="glyphicon glyphicon-triangle-top" onClick={(e) => props.onDeactivate(label, e)}></span>
+            </th>;
         })}
     </tr>
     </thead>
@@ -128,14 +139,57 @@ const TableBody = (props) => {
     ))}</tbody>;
 };
 
-const Table = (props) => (
-    <div className="table-responsive">
-        <table className="table">
-            <TableHeader {...props}/>
-            <TableBody {...props}/>
-        </table>
-    </div>
-);
+function sortBy (label, name) {
+
+    if (name === "Activate") {
+        AppState.state.workersList.sort((a, b) => {
+            if (a[label] < b[label]) {
+                return 1;
+            } else if (a[label] > b[label]) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+    } else if (name === "Deactivate") {
+        AppState.state.workersList.sort((a, b) => {
+            if (a[label] < b[label]) {
+                return -1;
+            } else if (a[label] > b[label]) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    }
+    AppState.dispatchEvent();
+}
+
+class Table extends React.Component {
+
+    constructor (props) {
+        super(props);
+    }
+
+    onActivate (label, e) {
+        actions.sortBy(label, "Activate");
+    }
+
+    onDeactivate (label, e) {
+        actions.sortBy(label, "Deactivate");
+    }
+
+    render () {
+        return (
+            <div className="table-responsive">
+                <table className="table">
+                    <TableHeader onActivate={this.onActivate} onDeactivate={this.onDeactivate} {...this.props}/>
+                    <TableBody {...this.props}/>
+                </table>
+            </div>
+        );
+    }
+}
 
 /* ACTIONS */
 
@@ -182,7 +236,36 @@ const actions = {
             }
         });
         AppState.dispatchEvent();
+    },
+
+    sortBy: (label, name) => {
+
+        if (AppState.state.workersList.length <= 1) return;
+
+        if (name === "Activate") {
+            AppState.state.workersList.sort((a, b) => {
+                if (a[label] < b[label]) {
+                    return 1;
+                } else if (a[label] > b[label]) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+        } else if (name === "Deactivate") {
+            AppState.state.workersList.sort((a, b) => {
+                if (a[label] < b[label]) {
+                    return -1;
+                } else if (a[label] > b[label]) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+        }
+        AppState.dispatchEvent();
     }
+
 };
 
 /* FILTERS */
