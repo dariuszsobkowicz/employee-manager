@@ -64,7 +64,10 @@ function makeFilters (list, data) {
 }
 
 const AppState = new StateStore({
-    workersList: workersData,
+
+    workersList: workersData.slice(0, 5),
+
+    workersSource: workersData,
 
     labels: Object.keys(workersData[0]).reduce((map, label) => {
         switch (label) {
@@ -105,6 +108,14 @@ const AppState = new StateStore({
         return map;
     }, {}),
 
+    pagination: {
+        activePage: 1,
+        pageSize:   5,
+    },
+
+    paginationNav: []
+
+
 });
 
 /* TABLE */
@@ -126,49 +137,32 @@ const TableHeader = (props) => (
     </thead>
 );
 
-const TableBody = (props) => {
-    return <tbody>{props.data.workersList.map((data) => (
-        <tr key={data.id}>
-            <td>{data.id}</td>
-            <td>{data.firstName}</td>
-            <td>{data.lastName}</td>
-            <td>{data.dateOfBirth.toLocaleDateString()}</td>
-            <td>{data.function}</td>
-            <td>{data.experience}</td>
-        </tr>
-    ))}</tbody>;
-};
+class TableBody extends React.Component {
 
-function sortBy (label, name) {
-
-    if (name === "Activate") {
-        AppState.state.workersList.sort((a, b) => {
-            if (a[label] < b[label]) {
-                return 1;
-            } else if (a[label] > b[label]) {
-                return -1;
-            } else {
-                return 0;
-            }
-        });
-    } else if (name === "Deactivate") {
-        AppState.state.workersList.sort((a, b) => {
-            if (a[label] < b[label]) {
-                return -1;
-            } else if (a[label] > b[label]) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
+    constructor (props) {
+        super(props);
+        this.state = this.props.data;
     }
-    AppState.dispatchEvent();
+
+    render () {
+        return <tbody>{this.state.workersList.map((data) => (
+            <tr key={data.id}>
+                <td>{data.id}</td>
+                <td>{data.firstName}</td>
+                <td>{data.lastName}</td>
+                <td>{data.dateOfBirth.toLocaleDateString()}</td>
+                <td>{data.function}</td>
+                <td>{data.experience}</td>
+            </tr>
+        ))}</tbody>;
+    }
 }
 
 class Table extends React.Component {
 
     constructor (props) {
         super(props);
+        this.state = this.props;
     }
 
     onActivate (label, e) {
@@ -183,8 +177,8 @@ class Table extends React.Component {
         return (
             <div className="table-responsive">
                 <table className="table">
-                    <TableHeader onActivate={this.onActivate} onDeactivate={this.onDeactivate} {...this.props}/>
-                    <TableBody {...this.props}/>
+                    <TableHeader onActivate={this.onActivate} onDeactivate={this.onDeactivate} {...this.state}/>
+                    <TableBody {...this.state}/>
                 </table>
             </div>
         );
@@ -198,7 +192,6 @@ const actions = {
 
         if (value === "") {
 
-            AppState.state.workersList = workersData;
             for (let key in AppState.state.filtersMap) {
 
                 if (key === "dateOfBirth") {
@@ -207,6 +200,7 @@ const actions = {
                     AppState.state.filtersMap[key] = "";
                 }
             }
+            AppState.state.workersSource = workersSource;
             AppState.dispatchEvent();
 
         } else {
@@ -227,7 +221,7 @@ const actions = {
     },
 
     filterList: (list, value, filter) => {
-        AppState.state.workersList = list.filter((item) => {
+        AppState.state.workersSource = list.filter((item) => {
 
             if (filter === "dateOfBirth") {
                 return new Date(item[filter]).getTime() < new Date(value).getTime();
@@ -235,15 +229,16 @@ const actions = {
                 return item[filter].toString() === value;
             }
         });
+        AppState.state.workersList = AppState.state.workersSource.slice(0, 5);
         AppState.dispatchEvent();
     },
 
     sortBy: (label, name) => {
 
-        if (AppState.state.workersList.length <= 1) return;
+        if (AppState.state.workersSource.length <= 5) return;
 
         if (name === "Activate") {
-            AppState.state.workersList.sort((a, b) => {
+            AppState.state.workersSource.sort((a, b) => {
                 if (a[label] < b[label]) {
                     return 1;
                 } else if (a[label] > b[label]) {
@@ -253,7 +248,7 @@ const actions = {
                 }
             });
         } else if (name === "Deactivate") {
-            AppState.state.workersList.sort((a, b) => {
+            AppState.state.workersSource.sort((a, b) => {
                 if (a[label] < b[label]) {
                     return -1;
                 } else if (a[label] > b[label]) {
@@ -263,10 +258,69 @@ const actions = {
                 }
             });
         }
+        AppState.state.workersList = AppState.state.workersSource.slice(0, 5);
         AppState.dispatchEvent();
+    },
+
+    getPaginationNumber: () => {
+
+        let num = Math.floor(AppState.state.workersSource.length / AppState.state.pagination.pageSize);
+
+        if (AppState.state.workersSource.length % AppState.state.pagination.pageSize > 0) {
+            num++;
+        }
+
+        const arr = [...new Array(num).fill(false)];
+
+        return arr;
     }
 
 };
+
+/* PAGINATION */
+
+class Pagination extends React.Component {
+    constructor (props) {
+        super(props);
+        this.state = this.props.data;
+    }
+
+    componentWillReceiveProps (nextProps) {
+        this.setState({
+            paginationNav: actions.getPaginationNumber()
+        });
+    }
+
+    componentDidMount () {
+        this.setState({
+            paginationNav: actions.getPaginationNumber()
+        });
+
+    }
+
+    changePage (page, e) {
+        let pageSize = this.state.pagination.pageSize;
+        let counter = page + 1;
+
+        AppState.state.workersList = AppState.state.workersSource.slice((page * pageSize), (counter * pageSize));
+        AppState.dispatchEvent();
+    }
+
+    render () {
+        return (
+            <div>
+                <nav aria-label="Page navigation">
+                    <ul className="pagination">
+                        {this.state.paginationNav.map((item, i) => {
+                            return <li key={i} className={item ? "active" : null}
+                                       onClick={(e) => this.changePage(i, e)}><a href="#">{i + 1}</a></li>;
+                        })}
+                    </ul>
+                </nav>
+            </div>
+        );
+    }
+}
 
 /* FILTERS */
 
@@ -370,6 +424,11 @@ class App extends React.Component {
                 <div className="row">
                     <div className="col-xs-12">
                         <Table data={this.state}/>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-xs-12 text-center">
+                        <Pagination data={this.state}/>
                     </div>
                 </div>
             </div>
