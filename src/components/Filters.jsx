@@ -1,5 +1,7 @@
 import React from "react";
 import actions from "./../Actions";
+import $ from "jquery";
+import daterangepicker from "bootstrap-daterangepicker";
 
 class Filters extends React.Component {
 

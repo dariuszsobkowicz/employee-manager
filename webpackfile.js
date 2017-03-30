@@ -6,7 +6,7 @@ const path               = require("path"),
 module.exports = {
     entry:   {
         app:     path.join(__dirname, "./src/main.jsx"),
-        vendors: ["react", "react-dom"]
+        vendors: ["react", "react-dom", "jquery", "bootstrap-daterangepicker", "moment"]
     },
     output:  {
         filename: "[chunkhash].[name].js",
