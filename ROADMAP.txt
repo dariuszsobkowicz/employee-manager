@@ -1,5 +1,0 @@
-* show workers in table
-
-    - filter by every attributes (for dateOfBirth use data picker)
-    - sort workers min to max and max to min
-    - pagination (5 workers for page)

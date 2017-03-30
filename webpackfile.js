@@ -5,12 +5,15 @@ const path               = require("path"),
 
 module.exports = {
     entry:   {
-        app:     "./src/main.jsx",
+        app:     path.join(__dirname, "./src/main.jsx"),
         vendors: ["react", "react-dom"]
     },
     output:  {
         filename: "[chunkhash].[name].js",
         path:     path.join(__dirname, "dist")
+    },
+    resolve: {
+        extensions: ['.js','.jsx', ".json"]
     },
     module:  {
         rules: [
