@@ -31,7 +31,7 @@ export const workersData = workersSource.map((data) => {
     let day = date.splice(1, 1)[0];
 
     date.unshift(day);
-    data.dateOfBirth = new Date(date.join("."));
+    data.dateOfBirth = new Date(date.join("/"));
 
     return data;
 

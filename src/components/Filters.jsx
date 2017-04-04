@@ -44,7 +44,7 @@ class Filters extends React.Component {
                 {Object.keys(this.state).map((filter) => (
 
                     <div key={filter} className="col-xs-4 col-md-2">
-
+                        {console.log(this.state)}
                         {filter !== "dateOfBirth" ?
                             <select className={"form-control " + (this.state[filter] !== "" ? "label-success" : null)}
                                     value={this.state[filter]}
@@ -60,7 +60,7 @@ class Filters extends React.Component {
                             </select> :
 
                             <input
-                                className={"form-control " + (new Date(this.state[filter]).getDate() < new Date().getDate() ? "label-success" : null)}
+                                className={"form-control " + (new Date(this.state[filter]).getTime() < (new Date().getTime() - (86400 * 1000)) ? "label-success" : null)}
                                 type="text"
                                 ref={(input) => {
                                     this.daterange = input;
