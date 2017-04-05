@@ -2,18 +2,19 @@ import { AppState } from "./AppState";
 import { workersData } from "./Handlers";
 
 const actions = {
+
     changeValue: (value, filter) => {
 
         if (value === "") {
 
             for (let key in AppState.state.filtersMap) {
-
                 if (key === "dateOfBirth") {
                     AppState.state.filtersMap[key] = new Date().toLocaleDateString();
                 } else {
                     AppState.state.filtersMap[key] = "";
                 }
             }
+
             AppState.state.workersSource = workersData;
             AppState.state.workersList = AppState.state.workersSource.slice(0, 5);
             AppState.dispatchEvent();
@@ -31,11 +32,13 @@ const actions = {
                     }
                 }
             }
+
             actions.filterList(workersData, value, filter);
         }
     },
 
     filterList: (list, value, filter) => {
+
         AppState.state.workersSource = list.filter((item) => {
 
             if (filter === "dateOfBirth") {
@@ -44,6 +47,7 @@ const actions = {
                 return item[filter].toString() === value;
             }
         });
+
         AppState.state.workersList = AppState.state.workersSource.slice(0, 5);
         AppState.dispatchEvent();
     },
@@ -62,6 +66,7 @@ const actions = {
                     return 0;
                 }
             });
+
         } else if (name === "Deactivate") {
             AppState.state.workersSource.sort((a, b) => {
                 if (a[label] < b[label]) {
@@ -73,6 +78,7 @@ const actions = {
                 }
             });
         }
+
         AppState.state.workersList = AppState.state.workersSource.slice(0, 5);
         AppState.dispatchEvent();
     },

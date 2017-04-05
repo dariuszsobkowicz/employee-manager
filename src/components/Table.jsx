@@ -6,42 +6,45 @@ const TableHeader = (props) => (
     <thead>
     <tr>
         {Object.keys(props.data.labels).map((label) => {
-            return <th key={label}>
-                {props.data.labels[label]}
-                {" "}
-                <span className="glyphicon glyphicon-triangle-bottom"
-                      onClick={(e) => props.onActivate(label, e)}></span>
-                {" "}
-                <span className="glyphicon glyphicon-triangle-top" onClick={(e) => props.onDeactivate(label, e)}></span>
-            </th>;
+            return (
+                <th key={label}>
+                    {props.data.labels[label]}
+                    {" "}
+                    <span className="glyphicon glyphicon-triangle-bottom"
+                          onClick={(e) => props.onActivate(label, e)}></span>
+                    {" "}
+                    <span className="glyphicon glyphicon-triangle-top"
+                          onClick={(e) => props.onDeactivate(label, e)}></span>
+                </th>);
         })}
     </tr>
     </thead>
 );
 
 class TableBody extends React.Component {
-
     constructor (props) {
         super(props);
         this.state = this.props.data;
     }
 
     render () {
-        return <tbody>{this.state.workersList.map((data) => (
-            <tr key={data.id}>
-                <td>{data.id}</td>
-                <td>{data.firstName}</td>
-                <td>{data.lastName}</td>
-                <td>{data.dateOfBirth.toLocaleDateString()}</td>
-                <td>{data.function}</td>
-                <td>{data.experience}</td>
-            </tr>
-        ))}</tbody>;
+        return (
+            <tbody>
+            {this.state.workersList.map((data) => (
+                <tr key={data.id}>
+                    <td>{data.id}</td>
+                    <td>{data.firstName}</td>
+                    <td>{data.lastName}</td>
+                    <td>{data.dateOfBirth.toLocaleDateString()}</td>
+                    <td>{data.function}</td>
+                    <td>{data.experience}</td>
+                </tr>
+            ))}
+            </tbody>);
     }
 }
 
 class Table extends React.Component {
-
     constructor (props) {
         super(props);
         this.state = this.props;

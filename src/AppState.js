@@ -1,5 +1,5 @@
 import StateStore from "./StateStore";
-import { makeFilters, workersData } from "./Handlers";
+import { makeFilters, workersData, makeLabels } from "./Handlers";
 
 export const AppState = new StateStore({
 
@@ -7,31 +7,7 @@ export const AppState = new StateStore({
 
     workersSource: workersData,
 
-    labels: Object.keys(workersData[0]).reduce((map, label) => {
-        switch (label) {
-            case "id":
-                map[label] = "ID";
-                break;
-            case "firstName":
-                map[label] = "First Name";
-                break;
-            case "lastName":
-                map[label] = "Last Name";
-                break;
-            case "dateOfBirth":
-                map[label] = "Date of Birth";
-                break;
-            case "function":
-                map[label] = "Position";
-                break;
-            case "experience":
-                map[label] = "Experience";
-                break;
-            default:
-                break;
-        }
-        return map;
-    }, {}),
+    labels: makeLabels(workersData[0]),
 
     filtersList: makeFilters(Object.keys(workersData[0]), workersData),
 
@@ -44,10 +20,10 @@ export const AppState = new StateStore({
         }
 
         return map;
+
     }, {}),
 
     pagination: {
-        activePage: 1,
         pageSize:   5,
     },
 

@@ -1,5 +1,38 @@
 import workersSource from "./workers-source";
 
+export function makeLabels (data) {
+
+    return Object.keys(data).reduce((map, label) => {
+
+        switch (label) {
+            case "id":
+                map[label] = "ID";
+                break;
+            case "firstName":
+                map[label] = "First Name";
+                break;
+            case "lastName":
+                map[label] = "Last Name";
+                break;
+            case "dateOfBirth":
+                map[label] = "Date of Birth";
+                break;
+            case "function":
+                map[label] = "Position";
+                break;
+            case "experience":
+                map[label] = "Experience";
+                break;
+            default:
+                break;
+        }
+
+        return map;
+
+    }, {});
+
+}
+
 export function makeFilters (list, data) {
 
     const filters = {};
@@ -11,6 +44,7 @@ export function makeFilters (list, data) {
                 map.push(filter[item]);
             }
             return map;
+
         }, []).sort((a, b) => {
             if (a < b) {
                 return -1;
@@ -27,6 +61,7 @@ export function makeFilters (list, data) {
 }
 
 export const workersData = workersSource.map((data) => {
+
     let date = data.dateOfBirth.split(".");
     let day = date.splice(1, 1)[0];
 

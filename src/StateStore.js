@@ -8,7 +8,6 @@ class StateStore {
     dispatchEvent () {
         this.callback(this.state);
     }
-
     eventListener (callback) {
         this.callback = callback;
     }

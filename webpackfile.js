@@ -4,18 +4,18 @@ const path               = require("path"),
       HtmlWebpackPlugin  = require("html-webpack-plugin");
 
 module.exports = {
-    entry:   {
+    entry:     {
         app:     path.join(__dirname, "./src/main.jsx"),
         vendors: ["react", "react-dom", "jquery", "bootstrap-daterangepicker", "moment"]
     },
-    output:  {
+    output:    {
         filename: "[chunkhash].[name].js",
         path:     path.join(__dirname, "dist")
     },
-    resolve: {
-        extensions: ['.js','.jsx', ".json"]
+    resolve:   {
+        extensions: ['.js', '.jsx', ".json"]
     },
-    module:  {
+    module:    {
         rules: [
             {
                 test:    /\.jsx?$/,
@@ -24,19 +24,19 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: ["style-loader", "css-loader"]
+                use:  ["style-loader", "css-loader"]
             },
             {
-                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                test:   /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 loader: "url-loader?limit=10000&minetype=application/font-woff"
             },
             {
-                test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                test:   /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 loader: "file-loader"
             }
         ]
     },
-    plugins: [
+    plugins:   [
         new webpack.optimize.CommonsChunkPlugin({
             name: ["vendors", "manifest"]
         }),
@@ -46,7 +46,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             template: "./src/index.html",
-            inject: "body",
+            inject:   "body",
             filename: "index.html"
         })
     ],
